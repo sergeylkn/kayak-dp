@@ -153,18 +153,24 @@ main section{padding:clamp(80px,12vw,160px) clamp(16px,5vw,64px)}
 .route .water{fill:#cfdcdc}
 .route .island{fill:var(--pine)}
 .route text{font:400 11px var(--mono);fill:var(--text-secondary);letter-spacing:.06em}
-.hold{margin-top:40px;padding:28px;border-radius:24px;background:var(--panel);position:relative;overflow:hidden;--h:0}
-.hold .rip{position:absolute;right:-60px;top:-60px;width:240px;height:240px;pointer-events:none}
-.hold .rip circle{fill:none;stroke:var(--line);stroke-width:1;transform-origin:120px 120px;opacity:calc(.6 - var(--h)*.6);animation:ripple 4.5s var(--ease) infinite}
-.hold .rip circle:nth-child(2){animation-delay:-1.5s}.hold .rip circle:nth-child(3){animation-delay:-3s}
-@keyframes ripple{from{transform:scale(.2)}to{transform:scale(1)}}
-.hold button{position:relative;font:600 16px/1 var(--body);color:var(--ink);background:transparent;border:0;cursor:pointer;padding:0;display:flex;align-items:center;gap:14px;user-select:none;-webkit-user-select:none;touch-action:none}
-.hold button svg{width:52px;height:52px}
-.hold button .meter{fill:none;stroke:var(--accent);stroke-width:4;stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--h));transform:rotate(-90deg);transform-origin:center}
-.facts{display:flex;gap:24px;flex-wrap:wrap;margin-top:22px;list-style:none;padding:0}
-.facts li{opacity:.18;transform:translateY(8px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
-.facts li.lit{opacity:1;transform:none}
-.facts b{display:block;font:700 26px/1.1 var(--display)}
+/* facts: three real photos, big numbers counting up */
+#plavni .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,2vw,24px);max-width:1200px;margin:clamp(48px,7vw,88px) auto 0;list-style:none;padding:0}
+.facts li{position:relative;aspect-ratio:3/4;border-radius:28px;overflow:hidden;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;padding:clamp(20px,2.4vw,32px);isolation:isolate;
+  opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.facts li:nth-child(2){transition-delay:.12s}.facts li:nth-child(3){transition-delay:.24s}
+.facts.in li{opacity:1;transform:none}
+.facts img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transform:scale(1.08);transition:transform 1.6s var(--ease)}
+.facts.in img{transform:none}
+.facts li::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,var(--tint) 0%,color-mix(in srgb,var(--tint) 55%,transparent) 42%,transparent 72%)}
+.facts .f1{--tint:#b4502f}.facts .f2{--tint:#2c4a39}.facts .f3{--tint:#14506b}
+.facts b{font:800 clamp(52px,5.6vw,88px)/.9 var(--display);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.facts span{font:700 clamp(17px,1.5vw,21px)/1.2 var(--display);margin-top:10px}
+.facts small{font-size:14.5px;line-height:1.45;margin-top:10px;opacity:.92;max-width:30ch}
+@media (max-width:720px){
+  #plavni .facts{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:82%;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:clamp(16px,5vw,64px);margin-inline:calc(-1*clamp(16px,5vw,64px));padding:0 clamp(16px,5vw,64px) 6px;scrollbar-width:none}
+  #plavni .facts::-webkit-scrollbar{display:none}
+  .facts li{scroll-snap-align:start}
+}
 
 /* 2. steps: four equal columns with real photos */
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:56px;list-style:none;padding:0;counter-reset:s}
@@ -251,9 +257,6 @@ details p{padding:0 0 22px;color:var(--text-secondary);max-width:62ch}
 @keyframes breathe{50%{transform:scale(1.12);opacity:.7}}
 @media (max-width:620px){.points{grid-template-columns:1fr}}
 
-.reed{display:block;width:min(240px,50vw);height:40px;margin:0 auto;color:var(--line)}
-.reed path{fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;transform-origin:bottom;animation:sway 8s var(--ease) infinite}
-.reed path:nth-child(2n){animation-delay:-2.7s}.reed path:nth-child(3n){animation-delay:-5.1s}
 @keyframes sway{50%{transform:rotate(3deg)}}
 
 footer{padding:56px clamp(16px,5vw,64px) 40px;background:var(--night);color:#a9bcc0;font-size:14px}
@@ -340,24 +343,15 @@ footer .disc{flex-basis:100%;max-width:70ch}
             <text x="18" y="160">ПАРУС · 0 КМ</text><text x="236" y="80">2 КМ</text><text x="384" y="34">ОСТРІВ СОСЕН · 4 КМ</text>
           </svg>
         </div>
-        <div class="hold" id="hold">
-          <svg class="rip" viewBox="0 0 240 240" aria-hidden="true"><circle cx="120" cy="120" r="110"/><circle cx="120" cy="120" r="110"/><circle cx="120" cy="120" r="110"/></svg>
-          <button type="button" id="holdBtn" aria-describedby="holdHint">
-            <svg viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="22" fill="none" stroke="#12303a22" stroke-width="4"/><circle class="meter" pathLength="1" cx="26" cy="26" r="22"/><path d="M26 14v24M20 20l6-6 6 6" stroke="#12303a" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
-            Затримайте весло
-          </button>
-          <p class="mono" id="holdHint" style="margin-top:10px;color:var(--text-secondary)">Натисніть і тримайте, щоб вода затихла</p>
-          <ul class="facts" id="facts">
-            <li><b>1 167 га</b><span class="mono">плавнів</span></li>
-            <li><b>48 років</b><span class="mono">соснам на острові</span></li>
-            <li><b>0</b><span class="mono">машин</span></li>
-          </ul>
-        </div>
       </div>
     </div>
+    <ul class="facts" id="facts">
+      <li class="f1"><img src="assets/fact-plavni.jpg" alt="Дівчина на каяку серед очерету в плавнях" width="720" height="960" loading="lazy"><b data-to="1167">1 167</b><span>гектарів плавнів</span><small>Протоки, очерет і латаття. Можна плисти годину й не повторити шлях.</small></li>
+      <li class="f2"><img src="assets/fact-pines.jpg" alt="Прапор України серед сосен на острові" width="720" height="960" loading="lazy"><b data-to="48">48</b><span>років соснам на острові</span><small>Кримські сосни на піщаному острові. Кінцева точка маршруту №1.</small></li>
+      <li class="f3"><img src="assets/fact-water.jpg" alt="Родина гребе на жовтому надувному каяку" width="720" height="960" loading="lazy"><b data-to="0" data-from="120">0</b><span>машин на воді</span><small>Тільки весло, птахи і плескіт. 15 хвилин від центру Дніпра.</small></li>
+    </ul>
   </section>
 
-  <svg class="reed" viewBox="0 0 240 40" aria-hidden="true"><path d="M100 40 C98 26 96 14 90 2"/><path d="M110 40 C111 24 114 12 120 0"/><path d="M120 40 C119 28 118 18 112 8"/><path d="M130 40 C132 26 136 16 144 6"/><path d="M140 40 C140 30 142 22 150 14"/></svg>
 
   <section id="vpershe">
     <div class="wrap">
@@ -671,29 +665,27 @@ footer .disc{flex-basis:100%;max-width:70ch}
   addEventListener('scroll', () => { if (routeRaf === null && !reduced.matches) routeRaf = requestAnimationFrame(drawRoute); }, { passive: true });
   drawRoute();
 
-  // the one interactive moment: hold the paddle, the water goes quiet, facts light up
-  const holdBox = $('#hold'), holdBtn = $('#holdBtn'), facts = [...document.querySelectorAll('#facts li')];
-  let h = 0, holding = false, holdRaf = null, holdLast = 0, done = false;
-  function holdTick(now) {
-    const dt = Math.min(100, now - (holdLast || now)); holdLast = now;
-    if (holding) h = Math.min(1, h + dt / 1800); else if (!done) h = Math.max(0, h - dt / 900);
-    if (h >= 1) done = true;
-    holdBox.style.setProperty('--h', h.toFixed(3));
-    facts.forEach((f, i) => f.classList.toggle('lit', done || h >= (i + 1) / 3 - .01));
-    if ((holding && h < 1) || (!holding && h > 0 && !done)) holdRaf = requestAnimationFrame(holdTick);
-    else { holdRaf = null; holdLast = 0; }
+  // facts: cards rise in, numbers count to their value (cars count DOWN to zero)
+  const factsBox = $('#facts'), nums = [...factsBox.querySelectorAll('b[data-to]')];
+  const fmt = n => Math.round(n).toLocaleString('uk-UA');
+  function countUp() {
+    const t0 = performance.now();
+    const step = now => {
+      const k = 1 - (1 - Math.min(1, (now - t0) / 1600)) ** 3;
+      nums.forEach(b => { const to = +b.dataset.to, from = +(b.dataset.from || 0); b.textContent = fmt(from + (to - from) * k); });
+      if (k < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
   }
-  const startHold = e => { e.preventDefault(); holding = true; if (!holdRaf) holdRaf = requestAnimationFrame(holdTick); };
-  const endHold = () => { holding = false; if (!holdRaf) holdRaf = requestAnimationFrame(holdTick); };
-  holdBtn.addEventListener('pointerdown', startHold);
-  ['pointerup', 'pointerleave', 'pointercancel'].forEach(t => holdBtn.addEventListener(t, endHold));
-  holdBtn.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) startHold(e); });
-  holdBtn.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') endHold(); });
+  new IntersectionObserver(([e], o) => {
+    if (!e.isIntersecting) return; o.disconnect();
+    factsBox.classList.add('in'); if (!reduced.matches) countUp();
+  }, { threshold: .25 }).observe(factsBox);
 
   // reduced motion, live in both directions
   function pinToFinalStates() {
     route.style.setProperty('--draw', 1);
-    done = true; h = 1; holdBox.style.setProperty('--h', 1); facts.forEach(f => f.classList.add('lit'));
+    factsBox.classList.add('in'); nums.forEach(b => b.textContent = fmt(+b.dataset.to));
   }
   function unpinFinalStates() {
     if (reduced.matches) return;
