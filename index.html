@@ -62,6 +62,37 @@ nav.solid{background:rgba(232,236,234,.86);backdrop-filter:blur(12px);box-shadow
 nav .btn{padding:11px 18px;font-size:14px}
 @media (pointer:coarse){.btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center}}
 @media (max-width:900px){.links{display:none}nav .btn{margin-left:auto}}
+/* mobile menu: native popover (Esc and outside tap close it for free) */
+.burger,.mm-close{width:46px;height:46px;border:0;border-radius:50%;background:rgba(15,31,38,.08);cursor:pointer;position:relative;flex:none;padding:0}
+.burger span,.mm-close span{position:absolute;left:13px;right:13px;height:2px;border-radius:2px;background:var(--ink);transition:transform .35s var(--ease)}
+.burger span:first-child{top:18px}.burger span:last-child{top:26px}
+.mm-close{background:rgba(255,255,255,.1)}
+.mm-close span{top:22px;background:#fff}.mm-close span:first-child{transform:rotate(45deg)}.mm-close span:last-child{transform:rotate(-45deg)}
+nav .burger{display:none;margin-left:-12px}
+@media (max-width:900px){nav .burger{display:block}}
+#mmenu{inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;border:0;padding:14px clamp(16px,4vw,48px) calc(24px + env(safe-area-inset-bottom));
+  background:var(--night) radial-gradient(120% 70% at 100% 0%,#e2704c33,transparent 60%);color:#e8ecea;flex-direction:column;overflow-y:auto;overscroll-behavior:contain}
+#mmenu:popover-open{display:flex}
+#mmenu::backdrop{background:transparent}
+.mm-top{display:flex;align-items:center;justify-content:space-between}
+.mm-links{list-style:none;padding:0;margin:clamp(24px,6vh,56px) 0 32px;counter-reset:none}
+.mm-links a{display:flex;align-items:baseline;gap:16px;padding:10px 0;color:#fff;text-decoration:none;font:700 clamp(26px,7.4vw,40px)/1.15 var(--display);border-bottom:1px solid #ffffff14}
+.mm-links i{font:400 12px var(--mono);font-style:normal;color:var(--accent);letter-spacing:.08em;min-width:22px}
+.mm-links a:active{color:var(--accent)}
+.mm-links li{opacity:0;transform:translateY(14px);transition:opacity .45s var(--ease),transform .45s var(--ease)}
+#mmenu:popover-open .mm-links li{opacity:1;transform:none}
+#mmenu:popover-open .mm-links li:nth-child(2){transition-delay:.04s}#mmenu:popover-open .mm-links li:nth-child(3){transition-delay:.08s}
+#mmenu:popover-open .mm-links li:nth-child(4){transition-delay:.12s}#mmenu:popover-open .mm-links li:nth-child(5){transition-delay:.16s}
+#mmenu:popover-open .mm-links li:nth-child(6){transition-delay:.2s}#mmenu:popover-open .mm-links li:nth-child(7){transition-delay:.24s}
+#mmenu:popover-open .mm-links li:nth-child(8){transition-delay:.28s}
+@starting-style{#mmenu:popover-open .mm-links li{opacity:0;transform:translateY(14px)}}
+.mm-foot{margin-top:auto;display:grid;gap:18px}
+.mm-foot .btn{width:100%}
+.mm-foot p{display:flex;justify-content:space-between;gap:16px;margin:0}
+.mm-foot p a{color:#c9d5d6;text-decoration:none;font:600 15px var(--body);padding:10px 0}
+body.menu-open{overflow:hidden}
+@media (max-height:700px){.mm-links{margin:18px 0 20px}.mm-links a{padding:7px 0}}
+@media (prefers-reduced-motion:reduce){.mm-links li{opacity:1;transform:none;transition:none}}
 
 /* hero */
 #hero{position:relative;height:550vh;background:var(--night)}
@@ -311,7 +342,28 @@ footer .disc{flex-basis:100%;max-width:70ch}
     <li><a href="#pytannia">Питання</a></li>
   </ul>
   <a class="btn" href="https://t.me/zhukbogdan" target="_blank" rel="noopener">Забронювати</a>
+  <button class="burger" type="button" popovertarget="mmenu" aria-controls="mmenu" aria-expanded="false" aria-label="Відкрити меню"><span></span><span></span></button>
 </nav>
+<div id="mmenu" popover aria-label="Меню">
+  <div class="mm-top">
+    <a class="logo" href="#hero"><img src="assets/logo.png" alt="kayak.dp.ua" width="360" height="164"></a>
+    <button class="mm-close" type="button" popovertarget="mmenu" popovertargetaction="hide" aria-label="Закрити меню"><span></span><span></span></button>
+  </div>
+  <ol class="mm-links">
+    <li><a href="#plavni"><i>01</i>Маршрут</a></li>
+    <li><a href="#vpershe"><i>02</i>Вперше на воді</a></li>
+    <li><a href="#ciny"><i>03</i>Ціни</a></li>
+    <li><a href="#podii"><i>04</i>Події</a></li>
+    <li><a href="#kvadro"><i>05</i>Квадроцикли</a></li>
+    <li><a href="#vidguky"><i>06</i>Відгуки</a></li>
+    <li><a href="#pytannia"><i>07</i>Питання</a></li>
+    <li><a href="#bron"><i>08</i>Де нас знайти</a></li>
+  </ol>
+  <div class="mm-foot">
+    <a class="btn" href="https://t.me/zhukbogdan" target="_blank" rel="noopener">Забронювати в Telegram</a>
+    <p><a href="tel:+380637100636">+38 063 710 06 36</a><a href="https://www.instagram.com/kayak.dp.ua" target="_blank" rel="noopener">Instagram</a></p>
+  </div>
+</div>
 
 <header id="hero">
   <div class="stage" id="stage">
@@ -673,6 +725,18 @@ footer .disc{flex-basis:100%;max-width:70ch}
   function applyHeroMode() { GATES.some(q => matchMedia(q).matches) ? disableScrub() : enableScrub(); }
   const MQLS = GATES.map(q => matchMedia(q));
   MQLS.forEach(m => m.addEventListener('change', applyHeroMode));
+
+  // mobile menu: popover does open/close/Esc; we sync aria, lock the page, and close before jumping to a section
+  const mm = $('#mmenu'), burger = $('.burger');
+  mm.addEventListener('toggle', e => {
+    const open = e.newState === 'open';
+    burger.setAttribute('aria-expanded', open); document.body.classList.toggle('menu-open', open);
+    if (open) mm.querySelector('.mm-links a').focus({ preventScroll: true });
+  });
+  mm.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+    e.preventDefault(); document.body.classList.remove('menu-open'); mm.hidePopover();
+    const t = document.querySelector(a.getAttribute('href')); if (t) t.scrollIntoView({ behavior: reduced.matches ? 'auto' : 'smooth' });
+  }));
 
   // nav goes solid after the hero
   const nav = $('#nav');
