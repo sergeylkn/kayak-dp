@@ -275,10 +275,15 @@ main section{padding:clamp(80px,12vw,160px) clamp(16px,5vw,64px)}
 .qbg-pin{position:sticky;top:0;height:100vh;height:100lvh;background:#1a2a2a url('assets/quad-poster.jpg') center/cover}
 .qbg video{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity 1.2s var(--ease)}
 .qbg video.on{opacity:1}
-.qbg-pin::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(15,31,38,.55) 0%,rgba(15,31,38,.72) 48%,rgba(15,31,38,.9) 100%)}
+.qbg-pin::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(15,31,38,.1) 0%,rgba(15,31,38,.22) 45%,rgba(15,31,38,.4) 100%)}
+/* a soft dark pool travels with the text, so the ride stays bright everywhere else */
+.qtext{position:relative}
+.qtext::before{content:"";position:absolute;inset:-64px -72px;z-index:-1;border-radius:50%;background:rgba(15,31,38,.7);filter:blur(48px);pointer-events:none}
+#kvadro .kicker{color:#ff9d78}
+#kvadro .h2,#kvadro .lede,#kvadro .kicker{text-shadow:0 1px 2px rgba(10,20,25,.55),0 2px 18px rgba(10,20,25,.6)}
 .qprice div{background:rgba(15,31,38,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 @media (orientation:portrait){.qbg-pin{background-image:url('assets/quad-poster-m.jpg')}
-  .qbg-pin::after{background:linear-gradient(180deg,rgba(15,31,38,.45) 0%,rgba(15,31,38,.78) 40%,rgba(15,31,38,.9) 100%)}}
+  .qbg-pin::after{background:linear-gradient(180deg,rgba(15,31,38,.08) 0%,rgba(15,31,38,.25) 38%,rgba(15,31,38,.38) 100%)}}
 
 /* 6. reviews */
 #vidguky .wrap{text-align:center}
@@ -488,7 +493,7 @@ footer .disc{flex-basis:100%;max-width:70ch}
         <img src="assets/quad-1.jpg" alt="Колона квадроциклів Linhai з райдерами на лісовій стежці" loading="lazy">
         <img src="assets/quad-2.jpg" alt="Дівчина на квадроциклі на пляжі біля Дніпра на світанку" loading="lazy">
       </div>
-      <div class="reveal">
+      <div class="reveal qtext">
         <span class="kicker mono">Драйв на березі</span>
         <h2 class="h2">Коли тиші досить</h2>
         <p class="lede">Квадроцикли Linhai з інструктором, круглий рік. Інструктаж перед стартом, кермо з 16 років, пасажиром можна в будь-якому віці.</p>
