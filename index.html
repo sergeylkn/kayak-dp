@@ -810,16 +810,23 @@ footer .disc{flex-basis:100%;max-width:70ch}
     factsBox.classList.add('in'); if (!reduced.matches) countUp();
   }, { threshold: .25 }).observe(factsBox);
 
-  // quads: looping ride behind the section. Loads only near the viewport, plays only while visible, poster under reduced motion
+  // quads: looping ride behind the section. Starts loading when the section gets near, then plays nonstop on every screen.
+  // If the browser blocks autoplay (iOS Low Power, Android data saver), the first tap or scroll starts it. Poster under reduced motion.
   const qv = $('#quadVideo'), qSec = $('#kvadro');
-  let qSrc = '', qVisible = false;
+  let qSrc = '', qArmed = false;
+  qv.muted = true; qv.defaultMuted = true; qv.autoplay = true;
   function quadSync() {
-    if (reduced.matches || !qVisible) { qv.pause(); return; }
+    if (reduced.matches) { qv.pause(); return; }
+    if (!qArmed) return;
     const want = portrait.matches ? 'assets/quad-loop-m.mp4' : 'assets/quad-loop.mp4';
-    if (qSrc !== want) { qSrc = want; qv.classList.remove('on'); qv.src = want; }
-    qv.play().then(() => qv.classList.add('on')).catch(() => {});
+    if (qSrc !== want) { const t = qv.currentTime; qSrc = want; qv.src = want; qv.addEventListener('loadedmetadata', () => { qv.currentTime = t % (qv.duration || 1); }, { once: true }); }
+    if (qv.paused) qv.play().catch(() => {});
   }
-  new IntersectionObserver(([e]) => { qVisible = e.isIntersecting; quadSync(); }, { rootMargin: '300px 0px' }).observe(qSec);
+  qv.addEventListener('playing', () => qv.classList.add('on'));
+  qv.addEventListener('pause', () => { if (!reduced.matches && !document.hidden) qv.play().catch(() => {}); });   // never stays paused on its own
+  new IntersectionObserver(([e], o) => { if (!e.isIntersecting) return; o.disconnect(); qArmed = true; quadSync(); }, { rootMargin: '600px 0px' }).observe(qSec);
+  ['pointerdown', 'touchend', 'scroll', 'keydown'].forEach(t => addEventListener(t, () => { if (qArmed && qv.paused) quadSync(); }, { passive: true }));
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) quadSync(); });
   portrait.addEventListener('change', quadSync);
   reduced.addEventListener('change', quadSync);
 
