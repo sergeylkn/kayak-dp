@@ -235,8 +235,19 @@ main section{padding:clamp(80px,12vw,160px) clamp(16px,5vw,64px)}
 .qprice div{border:1px solid #ffffff2a;border-radius:16px;padding:16px 18px}
 .qprice b{display:block;font:700 22px var(--display)}
 .qprice span{font:400 13px var(--mono);color:#a9bcc0}
-#kvadro .lede{color:#b7c6c8}
+#kvadro .lede{color:#c9d5d6}
 @media (max-width:900px){#kvadro .wrap{grid-template-columns:1fr}}
+/* looping AI ride behind the section: pinned to the viewport while the section scrolls */
+#kvadro{isolation:isolate}
+#kvadro .wrap{position:relative;z-index:1}
+.qbg{position:absolute;inset:0;overflow:clip;z-index:0;pointer-events:none}
+.qbg-pin{position:sticky;top:0;height:100vh;height:100lvh;background:#1a2a2a url('assets/quad-poster.jpg') center/cover}
+.qbg video{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity 1.2s var(--ease)}
+.qbg video.on{opacity:1}
+.qbg-pin::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(15,31,38,.55) 0%,rgba(15,31,38,.72) 48%,rgba(15,31,38,.9) 100%)}
+.qprice div{background:rgba(15,31,38,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+@media (orientation:portrait){.qbg-pin{background-image:url('assets/quad-poster-m.jpg')}
+  .qbg-pin::after{background:linear-gradient(180deg,rgba(15,31,38,.45) 0%,rgba(15,31,38,.78) 40%,rgba(15,31,38,.9) 100%)}}
 
 /* 6. reviews */
 #vidguky .wrap{text-align:center}
@@ -282,6 +293,7 @@ footer .disc{flex-basis:100%;max-width:70ch}
   *,*::before,*::after{animation:none!important;transition:none!important;transition-delay:0s!important}
   .reveal,.steps li,.facts li{opacity:1!important;transform:none!important}
   .route{--draw:1!important}
+  .qbg video{display:none}
 }
 </style>
 </head>
@@ -418,6 +430,7 @@ footer .disc{flex-basis:100%;max-width:70ch}
   </section>
 
   <section id="kvadro">
+    <div class="qbg" aria-hidden="true"><div class="qbg-pin"><video id="quadVideo" muted loop playsinline preload="none" disablepictureinpicture></video></div></div>
     <div class="wrap">
       <div class="qimgs reveal">
         <img src="assets/quad-1.jpg" alt="Колона квадроциклів Linhai з райдерами на лісовій стежці" loading="lazy">
@@ -481,7 +494,7 @@ footer .disc{flex-basis:100%;max-width:70ch}
   <div class="wrap">
     <span style="display:flex;align-items:center;gap:14px"><img src="assets/logo.png" alt="kayak.dp.ua" width="360" height="164" style="height:48px;width:auto" loading="lazy">© KAYAK.DP.UA, Дніпро.</span>
     <span><a href="https://t.me/zhukbogdan" target="_blank" rel="noopener">Telegram</a> · <a href="https://www.instagram.com/kayak.dp.ua" target="_blank" rel="noopener">Instagram</a> · <a href="tel:+380637100636">+38 063 710 06 36</a> · <a href="https://kayak.dp.ua/page73315641.html" target="_blank" rel="noopener">Своя крамниця</a></span>
-    <p class="disc">Відео на початку сторінки створене штучним інтелектом. Усі фото нижче справжні, з наших прогулянок.</p>
+    <p class="disc">Відео на початку сторінки та фонове відео в розділі про квадроцикли створені штучним інтелектом. Усі фото справжні, з наших прогулянок.</p>
   </div>
 </footer>
 
@@ -727,6 +740,19 @@ footer .disc{flex-basis:100%;max-width:70ch}
     if (!e.isIntersecting) return; o.disconnect();
     factsBox.classList.add('in'); if (!reduced.matches) countUp();
   }, { threshold: .25 }).observe(factsBox);
+
+  // quads: looping ride behind the section. Loads only near the viewport, plays only while visible, poster under reduced motion
+  const qv = $('#quadVideo'), qSec = $('#kvadro');
+  let qSrc = '', qVisible = false;
+  function quadSync() {
+    if (reduced.matches || !qVisible) { qv.pause(); return; }
+    const want = portrait.matches ? 'assets/quad-loop-m.mp4' : 'assets/quad-loop.mp4';
+    if (qSrc !== want) { qSrc = want; qv.classList.remove('on'); qv.src = want; }
+    qv.play().then(() => qv.classList.add('on')).catch(() => {});
+  }
+  new IntersectionObserver(([e]) => { qVisible = e.isIntersecting; quadSync(); }, { rootMargin: '300px 0px' }).observe(qSec);
+  portrait.addEventListener('change', quadSync);
+  reduced.addEventListener('change', quadSync);
 
   // reduced motion, live in both directions
   function pinToFinalStates() {
